@@ -1,28 +1,28 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app>
+    <v-main>
+      <v-responsive id="home" class="white-background full-height">
+        <v-container>
+          <MainMenu />
+          <v-container>
+            <router-view />
+          </v-container>
+          <CustomFooter
+          knowThat="If any data is collected, it will not and shall not play a part in any other activity, but metrics analysis only." />
+        </v-container>
+      </v-responsive>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import CustomFooter from './components/Footer'
+import MainMenu from './components/MainMenu'
 export default {
-  name: 'App',
+  name: 'app',
   components: {
-    HelloWorld
+    CustomFooter,
+    MainMenu,
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>

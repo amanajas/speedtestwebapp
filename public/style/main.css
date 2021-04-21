@@ -1,0 +1,120 @@
+  body {
+    font-family: sans-serif;
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-size: 14px;
+  }
+
+  .lang-based-display {
+    display: none;
+  }
+  @media only screen and (min-width: 200px) and (max-width: 531px) {
+    .lang-based-display {
+      display: inherit;
+      font-size: 12px;
+    } 
+  }
+  .based-display {
+    display: none;
+  }
+  @media only screen and (min-width: 200px) and (max-width: 631px) {
+    .based-display {
+      display: inherit;
+    } 
+  }
+
+  .margin-space-top {
+    margin-top: 10px;
+  }
+
+  .margin-space-bottom {
+    margin-bottom: 10px;
+  }
+
+  .full-height {
+    height: 100%;
+  }
+
+  @media only screen and (min-width: 200px) and (max-width: 800px) {
+    .link-title {
+      display: none;
+    }
+    .show-brand{
+      display: none;
+    }
+    .lang-based-horizon {
+      display: none;
+    }
+  }
+  @media only screen and (min-width: 801px) {
+    .link-title {
+      display: block;
+      margin-left: 5px;
+    }
+    .show-brand{
+      display: block;
+    }
+    .lang-based-vertical {
+      display: none;
+    }
+  }
+  @media only screen and (max-width: 531px) {
+    .lang-based-vertical {
+      display: none;
+    }
+  }
+  .lang-based-horizon {
+    font-size: 12px;
+  }
+  .lang-based-vertical {
+    font-size: 12px;
+  }
+    
+  .page-header {
+    background: rgb(31,28,71);
+    background: linear-gradient(180deg, rgba(31,28,71,1) 0%, rgba(9,9,121,1) 12%, rgba(64,127,231,1) 100%); 
+  }
+  
+  .all-center {
+    align-self: center;
+    align-items: center;
+    text-align: center;
+    align-content: center;
+    vertical-align: middle;
+  }
+  
+  .all-center-simple {
+    align-self: center;
+    align-items: flex-start;
+    align-content: flex-start;
+    vertical-align: top;
+  }
+  
+  .gray-background {
+    background-color: whitesmoke;
+  }
+  
+  .white-background {
+    background-color: white;
+  }
+  #home {
+    padding: 0;
+  }
+  
+  .scroll-enabled {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  
+  .flag-d {
+    margin-right: 5px;
+  }
+  .content-center {
+    justify-content: center;
+  }
+
+  .card-content {
+    position: absolute;
+    inset-block-end: 0; /* "bottom" */
+    inset-inline-end: 0; /* "right" */
+  }
