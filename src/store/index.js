@@ -7,10 +7,12 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: () => ({
     speedTestConfig: null,
+    speedTestContent: null,
     user: undefined
   }),
   getters: {
     speedTestConfig: state => state.speedTestConfig,
+    speedTestContent: state => state.speedTestContent,
     user: state => state.user
   },
   mutations: {
@@ -19,6 +21,9 @@ export default new Vuex.Store({
     },
     updateSpeedTestConfig: (state, content) => {
       Vue.set(state, 'speedTestConfig', content)
+    },
+    updateSpeedTestContent: (state, content) => {
+      Vue.set(state, 'speedTestContent', content)
     }
   },
   plugins: [

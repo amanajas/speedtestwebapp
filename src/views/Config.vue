@@ -1,12 +1,10 @@
 <template>
   <div class="all-center">
-    <div v-if="!hasConfig">
       <div v-if="searching">
         <PlaceHolder color="amber" size="50"/>
       </div>
       <div v-else>
-        <h6>Set your router IP and click on the button below to search in your network for endpoints.</h6>
-        <h4>Press enter when finish</h4>
+        <h6>Type your endpoint IP in the field below to connect it.</h6>
         <v-alert
           v-if="error.length != ''"
           border="right"
@@ -22,33 +20,48 @@
           v-on:submit.prevent="search"
         >
           <v-text-field
-            v-model="ip"
+            v-model="nameOfEndpoint"
+            :counter="50"
+            :rules="[rules.required]"
+            label="Name of the endpoint"
+            maxlength="50"
+            required
+          ></v-text-field>
+          <v-text-field
+            v-model="ipOfEndpoint"
             :counter="15"
             :rules="[rules.required, rules.counter, rules.ip]"
-            label="IP from router"
+            label="IP from endpoint"
             maxlength="15"
             required
           ></v-text-field>
+          <v-btn
+            color="success"
+            class="mr-4"
+            @click="search"
+          >
+            Add
+          </v-btn>
           </v-form>
       </div>
+      <EndpointList />
     </div>
-    <div v-else>
-
-    </div>
-  </div>
 </template>
 <script>
 import {mapGetters} from 'vuex'
 import axios from 'axios'
 import {log} from "../scripts/Utils"
 import PlaceHolder from "../components/PlaceHolder"
+import EndpointList from "../components/EndpointList"
 export default {
-  name: 'home',
+  name: 'config',
   data() {
     return {
       searching: false,
+      success: "",
       error: "",
-      ip: "",
+      ipOfEndpoint: "",
+      nameOfEndpoint: "",
       rules: {
         required: value => !!value || 'Required.',
         counter: value => value.length <= 15 || 'Max 15 characters',
@@ -67,28 +80,50 @@ export default {
     loggedIn () { return this.user !== null },
     hasConfig() {
       return this.speedTestConfig !== null && this.speedTestConfig.length > 0
-    }
+    },
+    validateForm () {
+      return this.$refs.form.validate()
+    },
   },
   methods: {
     async search () {
       try {
-        this.error = ""
-        this.searching = true
-        let addressNetwork = this.ip.split(".")[0] + "." + this.ip.split(".")[1] + "." + this.ip.split(".")[2]
-        for (var count = 101; count < 255; count++) {
-          const response = await axios.get("https://" + addressNetwork + "." + count + ":5000");
-          log(response)
+        this.success = ""
+        if (this.validateForm) {
+          this.error = ""
+          this.searching = true
+          let url = "http://" + this.ipOfEndpoint + ":5000/"
+          let response = await axios.get(url, {
+            headers: {
+              'Access-Control-Allow-Origin' : '*'
+            }
+          })
+          log(JSON.stringify(response))
+
+          if (response.data.message == "Everything running :)") {
+            // Adding the address in the list
+            let addresses = []
+            if (this.hasConfig) {
+              addresses = this.speedTestConfig
+            }
+            addresses.push({"name": this.nameOfEndpoint, "url": url})
+            this.$store.commit('updateSpeedTestConfig', addresses)
+            this.success = "Endpoint " + this.nameOfEndpoint + " added"
+          }
         }
       } catch (e) {
         this.error = e
         log(e)
       }
+      this.nameOfEndpoint = ""
+      this.ipOfEndpoint = ""
       this.searching = false
       return false
     }
   },
   components: {
-    PlaceHolder
+    PlaceHolder,
+    EndpointList
   }
 }
 </script>

@@ -13,7 +13,6 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.4",
-    "cors": "^2.8.5",
     "fs": "0.0.1-security",
     "js-cookie": "^2.2.1",
     "request": "^2.88.2",
