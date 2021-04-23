@@ -86,7 +86,7 @@ export default {
     },
   },
   methods: {
-    async search () {
+    async search() {
       try {
         this.success = ""
         if (this.validateForm) {
@@ -106,7 +106,12 @@ export default {
             if (this.hasConfig) {
               addresses = this.speedTestConfig
             }
-            addresses.push({"name": this.nameOfEndpoint, "url": url})
+            for (let item in addresses) {
+              if (addresses[item].url == url) {
+                throw Error("The endpoint " + url + " already exists with the name: " + addresses[item].name)
+              }
+            }
+            addresses.push({"name": this.nameOfEndpoint.toUpperCase(), "url": url})
             this.$store.commit('updateSpeedTestConfig', addresses)
             this.success = "Endpoint " + this.nameOfEndpoint + " added"
           }
