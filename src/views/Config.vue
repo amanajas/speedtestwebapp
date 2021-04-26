@@ -74,10 +74,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'user',
       'speedTestConfig'
       ]),
-    loggedIn () { return this.user !== null },
     hasConfig() {
       return this.speedTestConfig !== null && this.speedTestConfig.length > 0
     },
@@ -87,6 +85,7 @@ export default {
   },
   methods: {
     async search() {
+      log("Looking for endpoint...")
       try {
         this.success = ""
         if (this.validateForm) {
@@ -99,7 +98,6 @@ export default {
             }
           })
           log(JSON.stringify(response))
-
           if (response.data.message == "Everything running :)") {
             // Adding the address in the list
             let addresses = []
@@ -118,7 +116,7 @@ export default {
         }
       } catch (e) {
         this.error = e
-        log(e)
+        log("It was not possible to connect to the endpoint: " + e)
       }
       this.nameOfEndpoint = ""
       this.ipOfEndpoint = ""

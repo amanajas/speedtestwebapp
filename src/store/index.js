@@ -15,24 +15,14 @@ const vuexLocalStorage = new VuexPersist({
 
 export default new Vuex.Store({
   state: () => ({
-    speedTestConfig: null,
-    speedTestContent: null,
-    user: undefined
+    speedTestConfig: null
   }),
   getters: {
-    speedTestConfig: state => state.speedTestConfig,
-    speedTestContent: state => state.speedTestContent,
-    user: state => state.user
+    speedTestConfig: state => state.speedTestConfig
   },
   mutations: {
-    updateUser: (state, {user}) => {
-      Vue.set(state, 'user', user)
-    },
     updateSpeedTestConfig: (state, content) => {
       Vue.set(state, 'speedTestConfig', content)
-    },
-    updateSpeedTestContent: (state, content) => {
-      Vue.set(state, 'speedTestContent', content)
     }
   },
   plugins: [vuexLocalStorage.plugin]
