@@ -19,11 +19,9 @@
                 display: true
               }
             }],
-            xAxes: [ {
-              gridLines: {
-                display: false
-              }
-            }]
+            y: {
+              beginAtZero: true
+            }
           },
           legend: {
             display: true

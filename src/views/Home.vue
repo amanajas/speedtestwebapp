@@ -40,6 +40,7 @@ export default {
       data: null,
       processing: true,
       polling: null,
+      colors: []
     }
   },
   computed: {
@@ -54,7 +55,6 @@ export default {
     }
   },
   mounted() {
-
     this.requestAll()
     this.polling = setInterval(this.requestAll, 15000)
   },
@@ -65,6 +65,9 @@ export default {
       try {
         log("Updating...")
         let speedTestContent = await this.search()
+        if (this.colors.length == 0) {
+          this.colors = this.createColors(speedTestContent)
+        }
         let overall = this.getDataPerMinute(speedTestContent)
         let bars = this.getDataPerNetwork(speedTestContent)
         this.data = {"overall": overall, "bars": bars}
@@ -90,29 +93,41 @@ export default {
       let d = new Date()
       return d.getDate() + '.' + (d.getMonth()+1) + '.' + d.getFullYear()
     },
-    getRandomColor(notequalto) {
+    getRandomColor(strcolors=undefined) {
       let color = '#'
       for (let i = 0; i < 6; i++){
           const random = Math.random()
           const bit = (random * 16) | 0
           color += (bit).toString(16)
       }
-      return notequalto == color ? this.getRandomColor(color) : color
+      return strcolors.includes(color) ? this.getRandomColor(strcolors) : color
+    },
+    createColors(items) {
+      let colors = {}
+      let strcolors = ""
+      for (let item in items) {
+        let color1 = this.getRandomColor(strcolors)
+        strcolors += color1
+        let color2 = this.getRandomColor(strcolors)
+        strcolors += color2
+        colors[item] = [color1, color2]
+      }
+      return colors
     },
     getDataPerNetwork (speedTestContent) {
       log("Getting data per network...")
       let content = dataset.collection()
+      let labelDownload = dataset.label()
+      let labelUpload = dataset.label()
+      content.datasets.push(labelDownload)
+      content.datasets.push(labelUpload)
       for (let item in speedTestContent) {
         let points = speedTestContent[item]
         content.labels.push(item)
-        let labelDownload = dataset.label()
         labelDownload.label = 'Download (' + item + ")"
-        labelDownload.backgroundColor = this.getRandomColor()
-        let labelUpload = dataset.label()
+        labelDownload.backgroundColor = this.colors[item][0]
         labelUpload.label = 'Upload (' + item + ")"
-        labelUpload.backgroundColor = this.getRandomColor(labelDownload.backgroundColor)
-        content.datasets.push(labelDownload)
-        content.datasets.push(labelUpload)
+        labelUpload.backgroundColor = this.colors[item][1]
         let maxDownload = 0
         let maxUpload = 0
         if (points.length > 0) {
@@ -152,7 +167,7 @@ export default {
             }
             labelDownload.data.push(points[point].download)
             labelUpload.data.push(points[point].upload)
-          }
+          } 
         }
         networks[item] = {"name": item, "speed": content}
       }

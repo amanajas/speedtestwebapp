@@ -1,6 +1,5 @@
 <template>
-  <v-container class="grey lighten-5">
-    <v-row no-gutters  v-if="data">
+ <v-row no-gutters  v-if="data">
       <v-col>
         <div v-for="item, i in data.overall" :key="i" :value="i">
           <h3>Speed network {{item.name}}</h3>
@@ -12,7 +11,6 @@
         <bar-chart :chart-data="data.bars.speed"></bar-chart>
       </v-col>
     </v-row>
-  </v-container>
 </template>
 
 <script>
