@@ -65,7 +65,9 @@ export default {
       try {
         log("Updating...")
         let speedTestContent = await this.search()
-        this.data = this.getDataPerHour(speedTestContent)
+        let overall = this.getDataPerMinute(speedTestContent)
+        let bars = this.getDataPerNetwork(speedTestContent)
+        this.data = {"overall": overall, "bars": bars}
         this.processing = false
       } catch(e) {
         log(e)
@@ -88,20 +90,57 @@ export default {
       let d = new Date()
       return d.getDate() + '.' + (d.getMonth()+1) + '.' + d.getFullYear()
     },
-    getDataPerHour (speedTestContent) {
-      log("Getting data per hour...")
+    getRandomColor(notequalto) {
+      let color = '#'
+      for (let i = 0; i < 6; i++){
+          const random = Math.random()
+          const bit = (random * 16) | 0
+          color += (bit).toString(16)
+      }
+      return notequalto == color ? this.getRandomColor(color) : color
+    },
+    getDataPerNetwork (speedTestContent) {
+      log("Getting data per network...")
+      let content = dataset.collection()
+      for (let item in speedTestContent) {
+        let points = speedTestContent[item]
+        content.labels.push(item)
+        let labelDownload = dataset.label()
+        labelDownload.label = 'Download (' + item + ")"
+        labelDownload.backgroundColor = this.getRandomColor()
+        let labelUpload = dataset.label()
+        labelUpload.label = 'Upload (' + item + ")"
+        labelUpload.backgroundColor = this.getRandomColor(labelDownload.backgroundColor)
+        content.datasets.push(labelDownload)
+        content.datasets.push(labelUpload)
+        let maxDownload = 0
+        let maxUpload = 0
+        if (points.length > 0) {
+          for (let point in points) {
+            if (points[point].download > maxDownload) maxDownload = points[point].download
+            if (points[point].upload > maxUpload) maxUpload = points[point].upload
+          }
+          labelDownload.data.push(maxDownload)
+          labelUpload.data.push(maxUpload)
+        }
+      }
+      log("Getting data per network completed.")
+      return {"speed": content}
+    },
+    getDataPerMinute (speedTestContent) {
+      log("Getting data per minute...")
       let networks = {}
       for (let item in speedTestContent) {
         let points = speedTestContent[item]
         let content = dataset.collection()
-        let labelDownloadPerHour = dataset.label()
-        labelDownloadPerHour.label = 'Download',
-        labelDownloadPerHour.backgroundColor = '#ffbf00'
-        let labelUploadPerHour = dataset.label()
-        labelUploadPerHour.label = 'Upload'
-        labelUploadPerHour.backgroundColor = '#9966cc'
-        content.datasets.push(labelDownloadPerHour)
-        content.datasets.push(labelUploadPerHour)
+        let labelDownload = dataset.label()
+        labelDownload.label = 'Download'
+        labelDownload.backgroundColor = '#ffbf00'
+        let labelUpload = dataset.label()
+        labelUpload.label = 'Upload'
+        labelUpload.backgroundColor = '#9966cc'
+        content.datasets.push(labelDownload)
+        content.datasets.push(labelUpload)
         if (points.length > 0) {
           let lastDateTime = this.getTSDateTime(points[0].ts)
           content.labels.push(lastDateTime.split(" - ")[1])
@@ -111,13 +150,13 @@ export default {
               content.labels.push(currentDateTime.split(" - ")[1])
               lastDateTime = currentDateTime
             }
-            labelDownloadPerHour.data.push(points[point].download)
-            labelUploadPerHour.data.push(points[point].upload)
+            labelDownload.data.push(points[point].download)
+            labelUpload.data.push(points[point].upload)
           }
         }
         networks[item] = {"name": item, "speed": content}
       }
-      log("Getting data per hour completed.")
+      log("Getting data per minute completed.")
       return networks
     },
     async search() {
