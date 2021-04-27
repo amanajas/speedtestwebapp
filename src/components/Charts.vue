@@ -31,7 +31,7 @@ export default {
       error: "",
       processing: true,
       polling: null,
-      colors: []
+      colors: ['#ffbf00', '#9966cc']
     }
   },
   mounted() {
@@ -43,9 +43,6 @@ export default {
       this.processing = true
       try {
         log("Updating...")
-        if (this.colors.length == 0) {
-          this.colors = this.createColors(this.data)
-        }
         let overall = this.getDataPerMinute()
         let bars = this.getDataPerNetwork()
         this.dataProcessed = {"overall": overall, "bars": bars}
@@ -71,27 +68,6 @@ export default {
       let d = new Date()
       return d.getDate() + '.' + (d.getMonth()+1) + '.' + d.getFullYear()
     },
-    getRandomColor(strcolors=undefined) {
-      let color = '#'
-      for (let i = 0; i < 6; i++){
-          const random = Math.random()
-          const bit = (random * 16) | 0
-          color += (bit).toString(16)
-      }
-      return strcolors.includes(color) ? this.getRandomColor(strcolors) : color
-    },
-    createColors(items) {
-      let colors = {}
-      let strcolors = ""
-      for (let item in items) {
-        let color1 = this.getRandomColor(strcolors)
-        strcolors += color1
-        let color2 = this.getRandomColor(strcolors)
-        strcolors += color2
-        colors[item] = [color1, color2]
-      }
-      return colors
-    },
     getDataPerNetwork () {
       log("Getting data per network...")
       let content = dataset.collection()
@@ -102,10 +78,10 @@ export default {
       for (let item in this.data) {
         let points = this.data[item]
         content.labels.push(item)
-        labelDownload.label = 'Download (' + item + ")"
-        labelDownload.backgroundColor = this.colors[item][0]
-        labelUpload.label = 'Upload (' + item + ")"
-        labelUpload.backgroundColor = this.colors[item][1]
+        labelDownload.label = 'Download'
+        labelDownload.backgroundColor = this.colors[0]
+        labelUpload.label = 'Upload'
+        labelUpload.backgroundColor = this.colors[1]
         let maxDownload = 0
         let maxUpload = 0
         if (points.length > 0) {
@@ -128,10 +104,10 @@ export default {
         let content = dataset.collection()
         let labelDownload = dataset.label()
         labelDownload.label = 'Download'
-        labelDownload.backgroundColor = '#ffbf00'
+        labelDownload.backgroundColor = this.colors[0]
         let labelUpload = dataset.label()
         labelUpload.label = 'Upload'
-        labelUpload.backgroundColor = '#9966cc'
+        labelUpload.backgroundColor = this.colors[1]
         content.datasets.push(labelDownload)
         content.datasets.push(labelUpload)
         if (points.length > 0) {

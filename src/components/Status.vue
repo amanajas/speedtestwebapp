@@ -1,5 +1,5 @@
 <template>
-    <div class="all-center" v-if="hasConfig">
+    <div v-if="hasConfig">
         <v-alert
           v-if="error.length != ''"
           border="right"
@@ -12,7 +12,26 @@
         indeterminate
         color="yellow darken-2"></v-progress-linear>
         <div v-if="hasContent">
-
+          <strong>Average of speed</strong>
+          <div v-for="item, name in average" :key="name" :value="name">
+            <strong>{{ name }}</strong>
+            <v-progress-linear
+              :value="Math.round(getValueSpeed(item[0].download))"
+              :color="colors[0]"
+              height="25">
+            <template>
+              <strong>Download {{ Math.round(getValueSpeed(item[0].download)) }}%</strong>
+            </template>
+            </v-progress-linear>
+            <v-progress-linear
+              :value="Math.round(getValueSpeed(item[0].upload))"
+              :color="colors[1]"
+              height="25">
+            <template>
+              <strong>Upload {{ Math.round(getValueSpeed(item[0].upload)) }}%</strong>
+            </template>
+            </v-progress-linear>
+          </div>
         </div>
     </div>
 </template>
@@ -39,7 +58,7 @@ export default {
       return this.speedTestConfig !== null && this.speedTestConfig.length > 0
     },
     hasContent() {
-      return this.data !== null
+      return this.data !== null && Object.keys(this.average).length > 0
     }
   },
   mounted() {
@@ -65,14 +84,8 @@ export default {
                     'Access-Control-Allow-Origin' : '*'
                 }
                 })
-                if (response.data.speed) {
-                    if (response.data.speed.length > 500) {
-                        content[name] = response.data.speed.filter(function(item, index) {
-                        return index > response.data.speed.length - 100; 
-                        })
-                    } else {
-                        content[name] = response.data.speed
-                    }
+                if (response.data.average) {
+                  content[name] = response.data.average
                 }
             } catch (e) {
                 endPointError += addresses[item].name + " "
@@ -85,10 +98,13 @@ export default {
         if (Object.keys(content)) {
             // Limiting the size
             this.average = content
-            log(JSON.stringify(this.average))
         }
         this.processing = false
         log("Request completed.")
+    },
+    getValueSpeed(value) {
+      // 200 mb per second
+      return (value * 100) / 200
     }
   },
   beforeDestroy () {
