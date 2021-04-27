@@ -1,21 +1,25 @@
 <template>
- <v-row no-gutters v-if="dataProcessed.overall">
-      <v-col>
-        <div v-for="item, i in dataProcessed.overall" :key="i" :value="i">
-          <h3>Speed network {{item.name}}</h3>
-          <line-chart :chart-data="item.speed"></line-chart>
-         </div>
-      </v-col>
-      <v-col>
+  <v-row no-gutters v-if="dataProcessed.overall">
+    <v-col>
+      <div v-for="item, i in dataProcessed.overall" :key="i" :value="i">
+        <h3>Speed network {{item.name}}</h3>
+        <line-chart :chart-data="item.speed"></line-chart>
+      </div>
+    </v-col>
+    <v-col>
+      <div class="all-center">
         <h3>Speed in general</h3>
         <bar-chart :chart-data="dataProcessed.bars.speed"></bar-chart>
-      </v-col>
-    </v-row>
+      </div>
+      <Status :data="dataProcessed" :colors="colors" />
+    </v-col>
+  </v-row>
 </template>
 
 <script>
 import LineChart from '@/components/charts/LineChart'
 import BarChart from '@/components/charts/BarChart'
+import Status from '@/components/Status'
 import dataset from "@/components/charts/collections/dataset"
 import {log} from "@/scripts/Utils"
 export default {
@@ -151,7 +155,8 @@ export default {
   },
   components: {
     LineChart,
-    BarChart
+    BarChart,
+    Status
   },
   beforeDestroy () {
     clearInterval(this.polling)
