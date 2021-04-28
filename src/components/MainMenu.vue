@@ -11,7 +11,7 @@
     </v-row>
     <v-row v-if="hasLoaded">
         <v-card width="100%">
-          <v-btn text :href="link.link" v-for="link in links"
+          <v-btn text @click="$router.push(link.link)" v-for="link in links"
           :key="link.title" :value="link.title" depressed>
             <v-icon>{{ link.icon }}</v-icon>
             <span class="link-title">{{ link.title }}</span>
@@ -28,8 +28,8 @@ export default {
   data: () => {
       return { 
         links: [
-        {"link": "/", "title": "Home", "icon": "mdi-home"}, 
-        {"link": "/config", "title": "Configuration", "icon": "mdi-wrench"}],
+        {"link": "home", "title": "Home", "icon": "mdi-home"}, 
+        {"link": "config", "title": "Configuration", "icon": "mdi-wrench"}],
       }
   },
   computed: {
