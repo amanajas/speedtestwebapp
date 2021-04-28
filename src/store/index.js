@@ -15,14 +15,19 @@ const vuexLocalStorage = new VuexPersist({
 
 export default new Vuex.Store({
   state: () => ({
-    speedTestConfig: null
+    speedTestConfig: null,
+    maximumSpeedConfigured: 200
   }),
   getters: {
-    speedTestConfig: state => state.speedTestConfig
+    speedTestConfig: state => state.speedTestConfig,
+    maximumSpeedConfigured: state => state.maximumSpeedConfigured
   },
   mutations: {
     updateSpeedTestConfig: (state, content) => {
       Vue.set(state, 'speedTestConfig', content)
+    },
+    updateMaximumSpeedConfigured: (state, content) => {
+      Vue.set(state, 'maximumSpeedConfigured', content)
     }
   },
   plugins: [vuexLocalStorage.plugin]

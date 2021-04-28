@@ -1,39 +1,35 @@
 <template>
-    <div v-if="hasConfig">
-        <v-alert
-          v-if="error.length != ''"
-          border="right"
-          colored-border
-          type="error"
-          elevation="2">
-        {{error}}
-        </v-alert>
+    <v-container v-if="hasConfig">
         <v-progress-linear v-if="processing"
         indeterminate
         color="yellow darken-2"></v-progress-linear>
         <div v-if="hasContent">
-          <strong>Average of speed</strong>
-          <div v-for="item, name in average" :key="name" :value="name">
-            <strong>{{ name }}</strong>
-            <v-progress-linear
-              :value="Math.round(getValueSpeed(item[0].download))"
-              :color="colors[0]"
-              height="25">
-            <template>
-              <strong>Download {{ Math.round(getValueSpeed(item[0].download)) }}%</strong>
-            </template>
-            </v-progress-linear>
-            <v-progress-linear
-              :value="Math.round(getValueSpeed(item[0].upload))"
-              :color="colors[1]"
-              height="25">
-            <template>
-              <strong>Upload {{ Math.round(getValueSpeed(item[0].upload)) }}%</strong>
-            </template>
-            </v-progress-linear>
-          </div>
+          <v-row>
+            <v-card style="margin:10px;" flat width="100%">
+              <v-card-text>
+                <div class="text--primary"><strong>Average of speed based on maximum: {{ maximumSpeedConfigured }}mb/s</strong></div>
+                <p> <i>Note:</i> The values don't depend on the date </p>
+              </v-card-text>
+            </v-card>
+          </v-row>
+          <v-row>
+            <div v-for="item, name, i in average" :key="name" :value="name">
+              <v-card style="margin:10px;">
+                <v-card-text>
+                  <div class="text--primary">{{ name }}</div>
+                  <p>{{ speedTestConfig[i].url }}</p>
+                  <p class="text--primary">
+                    Download <strong>{{Math.round(getValueSpeed(item[0].download))}}mb/s</strong>
+                  </p>
+                  <p class="text--primary">
+                    Upload <strong>{{Math.round(getValueSpeed(item[0].upload))}}mb/s</strong>
+                  </p>
+                </v-card-text>
+              </v-card>
+            </div>
+          </v-row>
         </div>
-    </div>
+    </v-container>
 </template>
 <script>
 import {mapGetters} from 'vuex'
@@ -50,9 +46,15 @@ export default {
         polling: null,
     }
   },
+  watch: {
+    data() {
+      this.requestAll()
+    }
+  },
   computed: {
     ...mapGetters([
       'speedTestConfig',
+      'maximumSpeedConfigured'
       ]),
     hasConfig() {
       return this.speedTestConfig !== null && this.speedTestConfig.length > 0
@@ -104,7 +106,7 @@ export default {
     },
     getValueSpeed(value) {
       // 200 mb per second
-      return (value * 100) / 200
+      return (value * 100) / this.maximumSpeedConfigured
     }
   },
   beforeDestroy () {

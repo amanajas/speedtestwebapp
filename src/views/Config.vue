@@ -1,51 +1,75 @@
 <template>
-  <div class="all-center">
-      <div v-if="searching">
-        <PlaceHolder color="amber" size="50"/>
-      </div>
-      <div v-else>
-        <h6>Type your endpoint IP in the field below to connect it.</h6>
+  <v-container class="all-center">
+    <div v-if="searching">
+      <PlaceHolder color="amber" size="50"/>
+    </div>
+    <div class="margin-space-top" v-else>
+      <v-card flat>
+        <v-card-text>
+          <h6>Select your internet speed.</h6>
+        </v-card-text>
+        <div class="text-center">
+          <v-slider
+            v-model="internetSpeed"
+            min="4"
+            max="2000"
+            color="orange darken-3"
+            append-icon="mdi-plus"
+            prepend-icon="mdi-minus"
+            @click:append="moreInternet"
+            @click:prepend="lessInternet"
+            label="Internet speed in (mb/s)"
+          ></v-slider>
+          <div>
+            <span class="caption text-uppercase">speed:</span>
+            <span class="font-weight-bold">
+              {{ internetSpeed }}Mb/s
+            </span>
+          </div>
+        </div>
+        <v-divider></v-divider>
+        <v-card-text>
+          <h6>Type your endpoint IP in the field below to connect it.</h6>
+        </v-card-text>
         <v-alert
           v-if="error.length != ''"
           border="right"
           colored-border
           type="error"
-          elevation="2"
-        >
+          elevation="2">
           {{error}}
         </v-alert>
         <v-form
           ref="form"
           lazy-validation
-          v-on:submit.prevent="search"
-        >
-          <v-text-field
-            v-model="nameOfEndpoint"
-            :counter="50"
-            :rules="[rules.required]"
-            label="Name of the endpoint"
-            maxlength="50"
-            required
-          ></v-text-field>
-          <v-text-field
-            v-model="ipOfEndpoint"
-            :counter="15"
-            :rules="[rules.required, rules.counter, rules.ip]"
-            label="IP from endpoint"
-            maxlength="15"
-            required
-          ></v-text-field>
-          <v-btn
-            color="success"
-            class="mr-4"
-            @click="search"
-          >
-            Add
-          </v-btn>
+          v-on:submit.prevent="search">
+            <v-text-field
+              v-model="nameOfEndpoint"
+              :counter="50"
+              :rules="[rules.required]"
+              label="Name of the endpoint"
+              maxlength="50"
+              required
+            ></v-text-field>
+            <v-text-field
+              v-model="ipOfEndpoint"
+              :counter="15"
+              :rules="[rules.required, rules.counter, rules.ip]"
+              label="IP from endpoint"
+              maxlength="15"
+              required
+            ></v-text-field>
+            <v-btn
+              color="success"
+              class="mr-4"
+              @click="search">
+              Add
+            </v-btn>
           </v-form>
+        </v-card>
       </div>
-      <EndpointList />
-    </div>
+    <EndpointList />
+  </v-container>
 </template>
 <script>
 import {mapGetters} from 'vuex'
@@ -57,6 +81,7 @@ export default {
   name: 'config',
   data() {
     return {
+      rating: 2,
       searching: false,
       success: "",
       error: "",
@@ -74,7 +99,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'speedTestConfig'
+      'speedTestConfig',
+      'maximumSpeedConfigured'
       ]),
     hasConfig() {
       return this.speedTestConfig !== null && this.speedTestConfig.length > 0
@@ -82,8 +108,25 @@ export default {
     validateForm () {
       return this.$refs.form.validate()
     },
+    internetSpeed: {
+      get() {
+        return this.maximumSpeedConfigured
+      },
+      set(value) {
+        this.$store.commit('updateMaximumSpeedConfigured', value)
+      }
+    }
+  },
+  mounted() {
+    this.internetSpeed = this.maximumSpeedConfigured
   },
   methods: {
+    moreInternet() {
+      this.internetSpeed += 1
+    },
+    lessInternet() {
+      this.internetSpeed -= 1
+    },
     async search() {
       log("Looking for endpoint...")
       try {

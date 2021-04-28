@@ -34,6 +34,11 @@ export default {
       colors: ['#ffbf00', '#9966cc']
     }
   },
+  watch: {
+    data() {
+      this.requestAll()
+    }
+  },
   mounted() {
     this.requestAll()
     this.polling = setInterval(this.requestAll, 15000)
@@ -62,10 +67,6 @@ export default {
     getTSDate (ts) {
       let d = new Date(0)
       d.setUTCSeconds(ts)
-      return d.getDate() + '.' + (d.getMonth()+1) + '.' + d.getFullYear()
-    },
-    getNow() {
-      let d = new Date()
       return d.getDate() + '.' + (d.getMonth()+1) + '.' + d.getFullYear()
     },
     getDataPerNetwork () {
