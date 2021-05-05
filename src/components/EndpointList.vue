@@ -32,9 +32,19 @@
             </v-dialog>
             <h5 v-if="hasConfig">Endpoints registered:</h5>
             <v-btn text @click="deleteEndpoint(link)" v-for="link in speedTestConfig"
-                :key="link.url" :value="link.name" depressed>
-                    <strong>{{ link.name }}</strong>: {{ link.url }}
-                    <v-icon>mdi-close-circle</v-icon>
+                :key="link.url" :value="link.name" depressed style="margin:10px; padding:50px;">
+                  <table>
+                    <tr>
+                      <td><strong>{{ link.name }}</strong>: {{ link.url }}</td>
+                    </tr>
+                    <tr>
+                      <td>Download: <strong>{{ link.download }}Mb/s</strong></td>
+                    </tr>
+                    <tr>
+                      <td>Upload: <strong>{{ link.upload }}Mb/s</strong></td>
+                    </tr>
+                  </table>
+                  <v-icon>mdi-close-circle</v-icon>
                 <v-divider />
             </v-btn>
         </v-container>

@@ -2,6 +2,7 @@
   <v-container class="all-center">
     <v-row>
       <v-alert
+        min-width="100%"
         v-if="!hasConfig"
         dense
         outlined
@@ -9,17 +10,22 @@
         If you are seeing this is because you did not configured the endpoints.<br>
         Click on configuration option and follow the instructions.<br>
       </v-alert>
+    </v-row>
+    <v-row>
       <v-alert
-          v-if="error.length != ''"
-          border="right"
-          colored-border
-          type="error"
-          elevation="2">
-        {{error}}
+        min-width="100%"
+        v-if="error.length != ''"
+        border="right"
+        colored-border
+        type="error"
+        elevation="2">
+      {{error}}
       </v-alert>
+    </v-row>
+    <v-row>
       <v-progress-linear v-if="processing"
-          indeterminate
-          color="yellow darken-2"></v-progress-linear>
+        indeterminate
+        color="yellow darken-2"></v-progress-linear>
     </v-row>
     <v-row>
       <v-menu
@@ -77,7 +83,7 @@ export default {
       return this.speedTestConfig !== null && this.speedTestConfig.length > 0
     },
     hasContent() {
-      return this.data !== null
+      return this.speedTestConfig !== null && this.speedTestConfig.length > 0 && this.data != null
     },
     date: {
       get() {

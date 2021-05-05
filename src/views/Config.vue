@@ -6,24 +6,40 @@
     <div class="margin-space-top" v-else>
       <v-card flat>
         <v-card-text>
-          <h6>Select your internet speed.</h6>
+          <h6>Select your internet download speed.</h6>
         </v-card-text>
         <div class="text-center">
           <v-slider
-            v-model="internetSpeed"
+            v-model="internetDownloadSpeed"
             min="4"
             max="2000"
             color="orange darken-3"
             append-icon="mdi-plus"
             prepend-icon="mdi-minus"
-            @click:append="moreInternet"
-            @click:prepend="lessInternet"
-            label="Internet speed in (mb/s)"
+            @click:append="moreDownloadSpeed"
+            @click:prepend="lessDownloadSpeed"
+            label="Internet download speed in (mb/s)"
+          ></v-slider>
+          <v-slider
+            v-model="internetUploadSpeed"
+            min="4"
+            max="2000"
+            color="green darken-3"
+            append-icon="mdi-plus"
+            prepend-icon="mdi-minus"
+            @click:append="moreUploadSpeed"
+            @click:prepend="lessUploadSpeed"
+            label="Internet upload speed in (mb/s)"
           ></v-slider>
           <div>
-            <span class="caption text-uppercase">speed:</span>
+            <span class="caption text-uppercase">download speed:</span>
             <span class="font-weight-bold">
-              {{ internetSpeed }}Mb/s
+              {{ internetDownloadSpeed }}Mb/s
+            </span>
+            ,&nbsp;
+            <span class="caption text-uppercase">upload speed:</span>
+            <span class="font-weight-bold">
+              {{ internetUploadSpeed }}Mb/s
             </span>
           </div>
         </div>
@@ -59,6 +75,39 @@
               maxlength="15"
               required
             ></v-text-field>
+            <v-slider
+              v-model="internetAntenaDownloadSpeed"
+              min="4"
+              max="2000"
+              color="orange darken-3"
+              append-icon="mdi-plus"
+              prepend-icon="mdi-minus"
+              @click:append="moreAntenaDownloadSpeed"
+              @click:prepend="lessAntenaDownloadSpeed"
+              label="Antena download speed in (mb/s)"
+            ></v-slider>
+            <v-slider
+              v-model="internetAntenaUploadSpeed"
+              min="4"
+              max="2000"
+              color="green darken-3"
+              append-icon="mdi-plus"
+              prepend-icon="mdi-minus"
+              @click:append="moreAntenaUploadSpeed"
+              @click:prepend="lessAntenaUploadSpeed"
+              label="Antena upload speed in (mb/s)"
+            ></v-slider>
+            <div>
+              <span class="caption text-uppercase">download speed:</span>
+              <span class="font-weight-bold">
+                {{ internetAntenaDownloadSpeed }}Mb/s
+              </span>
+              ,&nbsp;
+              <span class="caption text-uppercase">upload speed:</span>
+              <span class="font-weight-bold">
+                {{ internetAntenaUploadSpeed }}Mb/s
+              </span>
+            </div>
             <v-btn
               color="success"
               class="mr-4"
@@ -87,6 +136,8 @@ export default {
       error: "",
       ipOfEndpoint: "",
       nameOfEndpoint: "",
+      internetAntenaDownloadSpeed: 0,
+      internetAntenaUploadSpeed: 0,
       rules: {
         required: value => !!value || 'Required.',
         counter: value => value.length <= 15 || 'Max 15 characters',
@@ -100,7 +151,8 @@ export default {
   computed: {
     ...mapGetters([
       'speedTestConfig',
-      'maximumSpeedConfigured'
+      'maximumDownloadSpeedConfigured',
+      'maximumUploadSpeedConfigured'
       ]),
     hasConfig() {
       return this.speedTestConfig !== null && this.speedTestConfig.length > 0
@@ -108,24 +160,51 @@ export default {
     validateForm () {
       return this.$refs.form.validate()
     },
-    internetSpeed: {
+    internetDownloadSpeed: {
       get() {
-        return this.maximumSpeedConfigured
+        return this.maximumDownloadSpeedConfigured
       },
       set(value) {
-        this.$store.commit('updateMaximumSpeedConfigured', value)
+        this.$store.commit('updateMaximumDownloadSpeedConfigured', value)
+      }
+    },
+    internetUploadSpeed: {
+      get() {
+        return this.maximumUploadSpeedConfigured
+      },
+      set(value) {
+        this.$store.commit('updateMaximumUploadSpeedConfigured', value)
       }
     }
   },
   mounted() {
-    this.internetSpeed = this.maximumSpeedConfigured
+    this.internetDownloadSpeed = this.maximumDownloadSpeedConfigured
+    this.internetUploadSpeed = this.maximumUploadSpeedConfigured
   },
   methods: {
-    moreInternet() {
-      this.internetSpeed += 1
+    moreDownloadSpeed() {
+      this.internetDownloadSpeed += 1
     },
-    lessInternet() {
-      this.internetSpeed -= 1
+    lessDownloadSpeed() {
+      this.internetDownloadSpeed -= 1
+    },
+    moreAntenaDownloadSpeed() {
+      this.internetAntenaDownloadSpeed += 1
+    },
+    lessAntenaDownloadSpeed() {
+      this.internetAntenaDownloadSpeed -= 1
+    },
+    moreUploadSpeed() {
+      this.internetUploadSpeed += 1
+    },
+    lessUploadSpeed() {
+      this.internetUploadSpeed -= 1
+    },
+    moreAntenaUploadSpeed() {
+      this.internetAntenaUploadSpeed += 1
+    },
+    lessAntenaUploadSpeed() {
+      this.internetAntenaUploadSpeed -= 1
     },
     async search() {
       log("Looking for endpoint...")
@@ -152,7 +231,12 @@ export default {
                 throw Error("The endpoint " + url + " already exists with the name: " + addresses[item].name)
               }
             }
-            addresses.push({"name": this.nameOfEndpoint.toUpperCase(), "url": url})
+            addresses.push({
+              "name": this.nameOfEndpoint.toUpperCase(), 
+              "url": url,
+              "download": this.internetAntenaDownloadSpeed,
+              "upload": this.internetAntenaUploadSpeed
+              })
             this.$store.commit('updateSpeedTestConfig', addresses)
             this.success = "Endpoint " + this.nameOfEndpoint + " added"
           }
